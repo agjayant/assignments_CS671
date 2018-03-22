@@ -1,6 +1,12 @@
 import numpy as np
 from feat import bbow
-from sklearn import svm
+from algo import useSVM
+import argparse
+
+argparser = argparse.ArgumentParser(description="Sentiment Analysis")
+argparser.add_argument('-f', '--feat', help="Representation", default="bbow")
+argparser.add_argument('-c', '--classify', help="Classification Algorithm", default="svm")
+argparser.add_argument('-s', '--samples', help="Number of Training Samples(upto 12500)", default=200)
 
 def getVector(vec, size=89527):
 
@@ -9,8 +15,23 @@ def getVector(vec, size=89527):
     return bbow_v
 
 if __name__ == "__main__":
-    num_examples = 200 ## upto 12500
-    train_data, train_label, test_data, test_label = bbow(num_examples)
+
+    args = argparser.parse_args()
+
+    num_examples = args.samples
+
+    if args.feat == "bbow":
+
+        train_data, train_y, test_data, test_y = bbow(num_examples)
+        train_x = [getVector(vec) for vec in train_data]
+        test_x = [getVector(vec) for vec in test_data]
+
+    if args.classify == "svm":
+
+        predictions = useSVM(train_x, train_y, test_x)
+
+    acc = sum([1 for i,j in zip(predictions, test_y) if i == j])
+    print acc*0.5/num_examples
 
     # permList = np.random.permutation(range(len(train_data)))
     # train_data = train_data[permList]
@@ -20,17 +41,6 @@ if __name__ == "__main__":
     # test_data = test_data[permList]
     # test_label = test_label[permList]
 
-    train_x = [getVector(vec) for vec in train_data]
-    test_x = [getVector(vec) for vec in test_data]
-
-    print "Training Beginning..."
-    clf = svm.SVC()
-    clf.fit(train_x, train_label)
-    print "Traning Done..."
-
-    predictions = [clf.predict(test_vec) for test_vec in test_x]
-    acc = sum([1 for i,j in zip(predictions, test_label) if i == j])
-    print acc*0.5/num_examples
 
 
 
