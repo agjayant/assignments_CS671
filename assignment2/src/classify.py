@@ -1,5 +1,5 @@
 import numpy as np
-from feat import bbow, tfR, tfIdf, wv
+from feat import bbow, tfR, tfIdf, wv, wv_glove
 from algo import useSVM, useNB, useLR, useMLP
 import argparse
 
@@ -33,6 +33,14 @@ if __name__ == "__main__":
         train_x, train_y, test_x, test_y = tfIdf(num_examples)
     elif args.feat == "wv":
         train_x, train_y, test_x, test_y = wv(num_examples)
+    elif args.feat == "wv_idf":
+        train_x, train_y, test_x, test_y = wv(num_examples, True)
+    elif args.feat == "glove":
+        train_x, train_y, test_x, test_y = wv_glove(num_examples)
+    elif args.feat == "glove_idf":
+        train_x, train_y, test_x, test_y = wv_glove(num_examples, True)
+    else:
+        assert (1==2), "Invalid Feature Method"
 
     if args.classify == "svm":
         predictions = useSVM(train_x, train_y, test_x)
@@ -42,6 +50,8 @@ if __name__ == "__main__":
         predictions = useLR(train_x, train_y, test_x)
     elif args.classify == "mlp":
         predictions = useMLP(train_x, train_y, test_x)
+    else:
+        assert (1==2), "Invalid Classification Method"
 
     acc = sum([1 for i,j in zip(predictions, test_y) if i == j])
     print acc*0.5/num_examples
