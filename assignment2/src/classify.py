@@ -1,5 +1,5 @@
 import numpy as np
-from feat import bbow, tfR, tfIdf
+from feat import bbow, tfR, tfIdf, wv
 from algo import useSVM, useNB, useLR, useMLP
 import argparse
 
@@ -31,6 +31,8 @@ if __name__ == "__main__":
         train_x, train_y, test_x, test_y = tfR(num_examples)
     elif args.feat == "tfidf":
         train_x, train_y, test_x, test_y = tfIdf(num_examples)
+    elif args.feat == "wv":
+        train_x, train_y, test_x, test_y = wv(num_examples)
 
     if args.classify == "svm":
         predictions = useSVM(train_x, train_y, test_x)
